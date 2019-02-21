@@ -1,0 +1,9 @@
+INSERT INTO users VALUES (1,'user1','name1','lastname1','email1@email.com','password1');
+INSERT INTO users VALUES (2,'user2','name2','lastname2','email2@email.com','password2');
+INSERT INTO users VALUES (3,'user3','name3','lastname3','email3@email.com','password3');
+INSERT INTO users VALUES (4,'user4','name4','lastname4','email4@email.com','password4');
+INSERT INTO users VALUES (5,'user5','name5','lastname5','email5@email.com','password5');
+INSERT INTO users VALUES (6,'user6','name6','lastname6','email6@email.com','password6');
+INSERT INTO users VALUES (7,'user7','name7','lastname7','email7@email.com','password7');
+INSERT INTO users VALUES (8,'user8','name8','lastname8','email8@email.com','password8');
+INSERT INTO users VALUES (9,'user9','name9','lastname9','email9@email.com','password9');

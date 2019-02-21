@@ -1,0 +1,14 @@
+server:
+    port: 9999
+#logging:
+#  level: DEBUG
+---
+spring:
+  profiles: prod
+
+#logging:
+#  level: WARN
+
+#spring:
+#    datasource:
+
