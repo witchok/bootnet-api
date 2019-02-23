@@ -4,11 +4,31 @@ server:
 #  level: DEBUG
 ---
 spring:
-  profiles: prod
+  profiles:
+    active: dev
+  ## Spring DATASOURCE (DataSourceAutoConfiguration & DataSourceProperties)
+  datasource:
+    url: jdbc:postgresql://localhost:5432/bootnetDB
+    username: postgres
+    password: password
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        # Hibernate ddl auto (create, create-drop, validate, update)
+        ddl-auto: update
 
-#logging:
-#  level: WARN
+---
 
-#spring:
-#    datasource:
-
+spring:
+  profiles: test
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+    platform: h2
+  h2:
+    console:
+      enabled: true
+      path: /console

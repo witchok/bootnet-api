@@ -40,5 +40,4 @@ public class UserController {
         log.info("User wasn't found in db");
         return new ResponseEntity<>((User) null, HttpStatus.NOT_FOUND);
     }
-
 }

@@ -2,7 +2,6 @@ package com.witchok.bootnet.domain.users;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Generated;
 import lombok.*;
 
 import javax.persistence.*;
@@ -12,7 +11,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "users")
+@Table(name = "bootuser")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -25,11 +24,13 @@ public class User {
     private String lastName;
     private String email;
     private String password;
-
+    @Column(name="profile_img")
+    private String profileImage;
+    @Column(name="registration_date")
     private Date createdAt;
 
-    public User(String username, String name, String lastName, String email, String password){
-        this(null, username, name, lastName, email, password, new Date());
+    public User(String username, String name, String lastName, String email, String password, String profileImage){
+        this(null, username, name, lastName, email, password, profileImage, new Date());
     }
 
 //    @PrePersist

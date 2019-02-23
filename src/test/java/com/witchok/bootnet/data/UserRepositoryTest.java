@@ -7,11 +7,13 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
 
+@ActiveProfiles("test")
 @RunWith(SpringRunner.class)
 @DataJpaTest
 public class UserRepositoryTest {
@@ -34,7 +36,7 @@ public class UserRepositoryTest {
         for (int i = 0; i < NUMBER_OF_USERS; i++) {
             int id = i+1;
             users[i] = new User("user"+id,"name"+id,"lastname"+id,
-                    "email"+id+"@mail.ru","password"+id);
+                    "email"+id+"@mail.ru","password"+id, null);
         }
         for (int i = 0; i < users.length; i++) {
             ids[i] = (Integer) entityManager.persistAndGetId(users[i]);
