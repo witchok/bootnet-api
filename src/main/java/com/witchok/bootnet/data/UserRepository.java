@@ -10,6 +10,5 @@ import java.util.List;
 @Repository
 public interface UserRepository extends CrudRepository<User, Integer>,
         PagingAndSortingRepository<User, Integer> {
-    User findByUsername(String username);
-    User findByEmail(String email);
+
 }

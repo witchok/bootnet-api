@@ -62,4 +62,5 @@ public class UserRepositoryTest {
         Optional<User> nonExistedUser = userRepository.findById(ids[ids.length-1]+1);
         assertFalse(nonExistedUser.isPresent());
     }
+
 }
