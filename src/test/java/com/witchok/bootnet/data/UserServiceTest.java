@@ -25,6 +25,30 @@ import static com.witchok.bootnet.UsersCreator.*;
 
 @ActiveProfiles("test")
 @RunWith(SpringRunner.class)
+//    @Test
+//    public void shouldReturnUsersSubscribers(){
+//        int id = 1;
+//        User testUser = User.builder()
+//                .username("user"+id)
+//                .email("email"+id+"@mail.ru")
+//                .password("password"+id)
+//                .build();
+//        new User("user"+id,"name"+id,"lastname"+id,
+//                "email"+id+"@mail.ru","password"+id, null);
+//        Set<User> subscribers = getFilledUserSet(id+1,5);
+//        saveUsersIntoDb(subscribers);
+//        subscribers.forEach((user) -> System.out.println(user.getId()+"--"+user.getUsername()));
+//
+//        testUser.setSubscribers(subscribers);
+//        int savedUserId = (Integer) entityManager.persistAndGetId(testUser);
+//        entityManager.flush();
+//
+//        Set<User> subscribersOfSavedUser = userService.findSubscribersByUserId(savedUserId);
+//
+//        assertThat(subscribersOfSavedUser, hasSize(subscribers.size()));
+//        subscribersOfSavedUser.forEach(user -> System.out.println(user.getId()+"--"+user.getUsername()));
+//        assertThat(subscribersOfSavedUser, equalTo(subscribers));
+//    }
 @DataJpaTest
 @ComponentScan(basePackages = "com.witchok.bootnet.data")
 public class UserServiceTest {
@@ -36,6 +60,7 @@ public class UserServiceTest {
 
     @MockBean
     private UserRepository userRepository;
+
     @Test
     public void shouldReturnSubscribers(){
         int id = 2;
@@ -58,11 +83,38 @@ public class UserServiceTest {
     }
 
     @Test(expected = UserNotFoundException.class)
-    public void shouldThrowUserNotFoundException(){
+    public void searchingSubscribers_shouldThrowUserNotFoundException(){
         int id =3;
         when(userRepository.findById(id))
                 .thenReturn(Optional.ofNullable(null));
         Set<User> testSubscribers = userService.findSubscribersByUserId(id);
+    }
+
+    @Test
+    public void shouldReturnSubscriptions(){
+        int id = 2;
+        Set<User> subscriptions = getFilledUserSet(id+10,5);
+        User testUser = User.builder()
+                .id(id)
+                .username("user"+id)
+                .email("email"+id+"@mail.ru")
+                .password("password"+id)
+                .subscriptions(subscriptions)
+                .build();
+
+        when(userRepository.findById(id))
+                .thenReturn(Optional.of(testUser));
+        Set<User> testSubscriptions = userService.findSubscriptionsByUserId(id);
+        assertThat(testSubscriptions, hasSize(5));
+        assertThat(testSubscriptions, equalTo(subscriptions));
+    }
+
+    @Test(expected = UserNotFoundException.class)
+    public void searchingSubscriptions_shouldThrowUserNotFoundException(){
+        int id =3;
+        when(userRepository.findById(id))
+                .thenReturn(Optional.ofNullable(null));
+        userService.findSubscriptionsByUserId(id);
     }
 
 //    @Test

@@ -1,12 +1,9 @@
 package com.witchok.bootnet.domain.users;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.*;
-import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -23,7 +20,7 @@ import java.util.Set;
 @Table(name = "bootuser")
 public class User implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
     private String username;
@@ -48,7 +45,7 @@ public class User implements Serializable {
 
     @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name="bootuser_subscriber",
+    @JoinTable(name = "bootuser_subscriber",
             joinColumns = {@JoinColumn(name = "subscriber_id")},
             inverseJoinColumns = {@JoinColumn(name = "user_id")} )
     private Set<User> subscriptions;
@@ -58,9 +55,9 @@ public class User implements Serializable {
                 new Date(), new LinkedHashSet(), new LinkedHashSet<>());
     }
 
-//    @PrePersist
-//    void createdAt(){
-//        this.createdAt = new Date();
-//    }
+    @PrePersist
+    void createdAt(){
+        this.createdAt = new Date();
+    }
 }
 

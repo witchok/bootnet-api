@@ -4,6 +4,7 @@ import com.witchok.bootnet.data.UserRepository;
 import com.witchok.bootnet.data.UserService;
 import com.witchok.bootnet.domain.users.User;
 import com.witchok.bootnet.exceptions.UserNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +15,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 import java.util.Set;
 
+@Slf4j
 @RestController
 @RequestMapping(path = "/users", produces = "application/json")
 @CrossOrigin(origins = "*")
 public class UserController {
-    private static final Logger log = LoggerFactory.getLogger(UserController.class);
+//    private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
     private UserRepository userRepository;
@@ -48,13 +50,24 @@ public class UserController {
     }
 
     @GetMapping("/profile/{id}/subscribers")
-    public Set<User> getuUserSubscribers(@PathVariable("id") int id){
+    public Set<User> getUserSubscribers(@PathVariable("id") int id){
         log.info("getUserSubscribers method, id={}",id);
         Set<User> subscribers = userService.findSubscribersByUserId(id);
+        log.info("subscribers size = {}",subscribers.size());
         return subscribers;
+    }
+
+    @GetMapping("/profile/{id}/subscriptions")
+    public Set<User> getUserSubscriptions(@PathVariable("id") int id){
+        log.info("getUserSubscriptions method, id={}",id);
+        Set<User> subscriptions = userService.findSubscriptionsByUserId(id);
+        log.info("subscriptions size = {}",subscriptions.size());
+        return subscriptions;
     }
 
     @ExceptionHandler(value = UserNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public void userNotFoundHandler(){ }
+    public void userNotFoundHandler(Exception exc){
+        log.info("userNotFoundHandler method {}",exc.getMessage());
+    }
 }

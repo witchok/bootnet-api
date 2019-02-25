@@ -63,4 +63,24 @@ public class UserRepositoryTest {
         assertFalse(nonExistedUser.isPresent());
     }
 
+    @Test
+    public void shouldSaveNewUser(){
+        User userToSave = User.builder()
+                .username("newUser")
+                .password("password")
+                .email("emaNew@ema.com")
+                .build();
+        User savedUser = userRepository.save(userToSave);
+
+        assertNotNull(savedUser.getId());
+        Optional<User> userRepositoryByIdOpt = userRepository.findById(savedUser.getId());
+        assertTrue(userRepositoryByIdOpt.isPresent());
+        User userById = userRepositoryByIdOpt.get();
+
+        assertEquals(savedUser,userById);
+        assertEquals(userById.getUsername(), userToSave.getUsername());
+        assertEquals(userById.getPassword(), userToSave.getPassword());
+        assertEquals(userById.getEmail(), userToSave.getEmail());
+        assertNotNull(userById.getCreatedAt());
+    }
 }

@@ -95,9 +95,9 @@ public class UserControllerTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", hasSize(amount)))
                 .andExpect(jsonPath("$[*].id", containsInAnyOrder(subscribers
-                                                            .stream()
-                                                            .map(item -> item.getId())
-                                                            .toArray()))
+                                    .stream()
+                                    .map(item -> item.getId())
+                                    .toArray()))
                 );
     }
 
@@ -108,6 +108,36 @@ public class UserControllerTest {
                 .thenThrow(new UserNotFoundException());
 
         mockMvc.perform(get("/users/profile/"+id+"/subscribers"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void shouldReturnUsersSubscriptions() throws Exception {
+        int userId = 3;
+        int startId = 5;
+        int amount = 5;
+        Set<User> subscriptions = getFilledUserSet(startId, amount);
+        when(userService.findSubscriptionsByUserId(3))
+                .thenReturn(subscriptions);
+
+        mockMvc.perform(get("/users/profile/"+userId+"/subscriptions"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", hasSize(amount)))
+                .andExpect(jsonPath("$[*].id", containsInAnyOrder(subscriptions
+                        .stream()
+                        .map(item -> item.getId())
+                        .toArray()))
+                );
+    }
+
+    @Test
+    public void whenPerformSearchUsersSubscriptions_shouldReturnNotFound() throws Exception {
+        int id = 1;
+        when(userService.findSubscriptionsByUserId(id))
+                .thenThrow(new UserNotFoundException());
+
+        mockMvc.perform(get("/users/profile/"+id+"/subscriptions"))
                 .andExpect(status().isNotFound());
     }
 }

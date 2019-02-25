@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
         value = HttpStatus.NOT_FOUND,
         reason = "User not found")
 public class UserNotFoundException extends RuntimeException{
-    private String msg;
 
     public UserNotFoundException(String msg){
         super(msg);
@@ -18,11 +17,4 @@ public class UserNotFoundException extends RuntimeException{
         super();
     }
 
-    public String getMsg() {
-        return msg;
-    }
-
-    public void setMsg(String msg) {
-        this.msg = msg;
-    }
 }
