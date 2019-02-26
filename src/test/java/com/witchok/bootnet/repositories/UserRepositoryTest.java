@@ -1,4 +1,4 @@
-package com.witchok.bootnet.data;
+package com.witchok.bootnet.repositories;
 
 import com.witchok.bootnet.domain.users.User;
 import org.junit.Before;
@@ -35,8 +35,13 @@ public class UserRepositoryTest {
         System.out.println("@Before");
         for (int i = 0; i < NUMBER_OF_USERS; i++) {
             int id = i+1;
-            users[i] = new User("user"+id,"name"+id,"lastname"+id,
-                    "email"+id+"@mail.ru","password"+id, null);
+            users[i] = User.builder()
+                    .username("user"+id)
+                    .name("name"+id)
+                    .lastName("lastname"+id)
+                    .email("email"+id+"@mail.ru")
+                    .password("password"+id)
+                .build();
         }
         for (int i = 0; i < users.length; i++) {
             ids[i] = (Integer) entityManager.persistAndGetId(users[i]);
@@ -58,7 +63,10 @@ public class UserRepositoryTest {
         assertTrue(optUser.isPresent());
         User user1 = optUser.get();
         assertEquals(users[0].getUsername(), user1.getUsername());
+    }
 
+    @Test
+    public void shouldNotFindUserById(){
         Optional<User> nonExistedUser = userRepository.findById(ids[ids.length-1]+1);
         assertFalse(nonExistedUser.isPresent());
     }
@@ -82,5 +90,38 @@ public class UserRepositoryTest {
         assertEquals(userById.getPassword(), userToSave.getPassword());
         assertEquals(userById.getEmail(), userToSave.getEmail());
         assertNotNull(userById.getCreatedAt());
+    }
+
+    @Test
+    public void shouldFindUserByUsername(){
+        Optional<User> optUser = userRepository.findUserByUsername(users[0].getUsername());
+        assertTrue(optUser.isPresent());
+        User user = optUser.get();
+        assertEquals(users[0].getId(), user.getId());
+        assertEquals(users[0].getEmail(), user.getEmail());
+    }
+
+
+    @Test
+    public void shouldNotFindUserByUsername(){
+        Optional<User> optUser = userRepository.findUserByUsername("nonExisted");
+        assertFalse(optUser.isPresent());
+    }
+
+
+    @Test
+    public void shouldFindUserByEmail(){
+        Optional<User> optUser = userRepository.findUserByEmail(users[0].getEmail());
+        assertTrue(optUser.isPresent());
+        User user = optUser.get();
+        assertEquals(users[0].getId(), user.getId());
+        assertEquals(users[0].getUsername(), user.getUsername());
+    }
+
+
+    @Test
+    public void shouldNotFindUserByEmail(){
+        Optional<User> optUser = userRepository.findUserByEmail("nonExisted@email.com");
+        assertFalse(optUser.isPresent());
     }
 }

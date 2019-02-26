@@ -1,15 +1,15 @@
 package com.witchok.bootnet.restControllers;
 
-import com.witchok.bootnet.data.UserRepository;
-import com.witchok.bootnet.data.UserService;
+import com.witchok.bootnet.domain.users.UserDTO;
+import com.witchok.bootnet.repositories.UserRepository;
+import com.witchok.bootnet.services.UserService;
 import com.witchok.bootnet.domain.users.User;
 import com.witchok.bootnet.exceptions.UserNotFoundException;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -20,7 +20,6 @@ import java.util.Set;
 @RequestMapping(path = "/users", produces = "application/json")
 @CrossOrigin(origins = "*")
 public class UserController {
-//    private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
     private UserRepository userRepository;
@@ -37,7 +36,7 @@ public class UserController {
 
     }
 
-    @GetMapping("/profile/{id}")
+    @GetMapping("/profiles/{id}")
     public ResponseEntity<User> userById (@PathVariable("id") int id){
         log.info("userById method, id={}",id);
         Optional<User> optionalUser = userRepository.findById(id);
@@ -49,7 +48,7 @@ public class UserController {
         return new ResponseEntity<>((User) null, HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping("/profile/{id}/subscribers")
+    @GetMapping("/profiles/{id}/subscribers")
     public Set<User> getUserSubscribers(@PathVariable("id") int id){
         log.info("getUserSubscribers method, id={}",id);
         Set<User> subscribers = userService.findSubscribersByUserId(id);
@@ -57,12 +56,23 @@ public class UserController {
         return subscribers;
     }
 
-    @GetMapping("/profile/{id}/subscriptions")
+    @GetMapping("/profiles/{id}/subscriptions")
     public Set<User> getUserSubscriptions(@PathVariable("id") int id){
         log.info("getUserSubscriptions method, id={}",id);
         Set<User> subscriptions = userService.findSubscriptionsByUserId(id);
         log.info("subscriptions size = {}",subscriptions.size());
         return subscriptions;
+    }
+
+    @PostMapping(value = "/profiles", consumes = "application/json")
+    @ResponseStatus(HttpStatus.CREATED)
+    public User saveNewUser(
+            @RequestBody UserDTO userDTO,
+            Errors errors){
+        log.info("saveNewUser: trying save user with username '{}'",userDTO.getUsername());
+        User userToSave = userDTO.convertToUser();
+        User savedUser = userService.registerNewUser(userToSave);
+        return savedUser;
     }
 
     @ExceptionHandler(value = UserNotFoundException.class)

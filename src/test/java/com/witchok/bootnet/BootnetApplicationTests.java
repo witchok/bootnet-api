@@ -1,6 +1,6 @@
 package com.witchok.bootnet;
 
-import com.witchok.bootnet.data.UserRepository;
+import com.witchok.bootnet.repositories.UserRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

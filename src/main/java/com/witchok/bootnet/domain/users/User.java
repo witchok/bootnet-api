@@ -50,10 +50,10 @@ public class User implements Serializable {
             inverseJoinColumns = {@JoinColumn(name = "user_id")} )
     private Set<User> subscriptions;
 
-    public User(String username, String name, String lastName, String email, String password, String profileImage){
-        this(null, username, name, lastName, email, password, profileImage,
-                new Date(), new LinkedHashSet(), new LinkedHashSet<>());
-    }
+//    public User(String username, String name, String lastName, String email, String password, String profileImage){
+//        this(null, username, name, lastName, email, password, profileImage,
+//                new Date(), new LinkedHashSet(), new LinkedHashSet<>());
+//    }
 
     @PrePersist
     void createdAt(){
