@@ -19,31 +19,19 @@ public class UserServiceImpl implements UserService{
 
     public Set<User> findSubscribersByUserId(int id){
         log.info("findSubscribersByUserId: id = {}",id);
-        Optional<User> optUser = userRepository.findById(id);
-        if (optUser.isPresent()){
-            User user = optUser.get();
-            log.info("findSubscribersByUserId: user with id '{}' was found, username is '{}'",id,user.getUsername());
-            Set<User> subscribers = user.getSubscribers();
-            log.info("findSubscribersByUserId: number of subscribers is {}",subscribers.size());
-            return subscribers;
-        }
-        log.info("findSubscribersByUserId: user with id '{}' wasn't found",id);
-        throw new UserNotFoundException(String.format("User with id '%d' isn't found",id));
+        User user = this.findUserById(id);
+        Set<User> subscribers = user.getSubscribers();
+        log.info("findSubscribersByUserId: number of subscribers is {}",subscribers.size());
+        return subscribers;
     }
 
     @Override
     public Set<User> findSubscriptionsByUserId(int id) {
         log.info("findSubscriptionsByUserId: id = {}",id);
-        Optional<User> optUser = userRepository.findById(id);
-        if (optUser.isPresent()){
-            User user = optUser.get();
-            log.info("findSubscriptionsByUserId: user with id '{}' was found, username is '{}'",id,user.getUsername());
-            Set<User> subscriptions = user.getSubscriptions();
-            log.info("findSubscriptionsByUserId: number of subscriptions is {}",subscriptions.size());
-            return subscriptions;
-        }
-        log.info("findSubscriptionsByUserId: user with id '{}' wasn't found",id);
-        throw new UserNotFoundException(String.format("User with id '%d' isn't found",id));
+        User user = this.findUserById(id);
+        Set<User> subscriptions = user.getSubscriptions();
+        log.info("findSubscriptionsByUserId: number of subscriptions is {}",subscriptions.size());
+        return subscriptions;
     }
 
     @Override
@@ -62,5 +50,14 @@ public class UserServiceImpl implements UserService{
         User savedUser = userRepository.save(user);
         log.info("registerNewUser: user saved successfully with id '{}'",savedUser.getId());
         return savedUser;
+    }
+
+    @Override
+    public User findUserById(int id) {
+        Optional<User> optUser = userRepository.findById(id);
+        if( optUser.isPresent()){
+            return optUser.get();
+        }
+        throw new UserNotFoundException(String.format("User with id '%d' isn't found",id));
     }
 }

@@ -35,6 +35,32 @@ public class UserServiceTest {
     private UserRepository userRepository;
 
     @Test
+    public void shouldReturnUserById(){
+        int id = 2;
+        User testUser = User.builder()
+                .id(id)
+                .username("user"+id)
+                .email("email"+id+"@mail.ru")
+                .password("password"+id)
+                .build();
+        when(userRepository.findById(id))
+                .thenReturn(Optional.of(testUser));
+
+        User savedUser = userService.findUserById(id);
+        assertEquals(testUser, savedUser);
+    }
+
+    @Test(expected = UserNotFoundException.class)
+    public void givenId_shouldThrowUserNotFoundException(){
+        int id = 13;
+
+        when(userRepository.findById(id))
+                .thenReturn(Optional.ofNullable(null));
+
+        User savedUser = userService.findUserById(id);
+    }
+
+    @Test
     public void shouldReturnSubscribers(){
         int id = 2;
         Set<User> subscribers = getFilledUserSet(id+10,5);

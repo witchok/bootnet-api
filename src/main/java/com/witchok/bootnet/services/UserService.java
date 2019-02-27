@@ -8,4 +8,5 @@ public interface UserService {
     Set<User> findSubscribersByUserId(int id);
     Set<User> findSubscriptionsByUserId(int id);
     User registerNewUser(User user);
+    User findUserById(int id);
 }

@@ -1,26 +1,27 @@
 package com.witchok.bootnet.domain.users;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.witchok.bootnet.serialier.CustomSetUserSerializer;
 import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(exclude = {"subscribers","subscriptions","id"})
+@EqualsAndHashCode(exclude = {"subscribers","subscriptions"})
 @Builder
 @Entity
 @Table(name = "bootuser")
 public class User implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     private String username;
@@ -30,30 +31,26 @@ public class User implements Serializable {
     private String lastName;
 
     private String email;
+
+    @JsonIgnore
     private String password;
+
     @Column(name="profile_img")
     private String profileImage;
+
     @Column(name="registration_date")
     private Date createdAt;
 
-    @JsonIgnore
-    @ManyToMany(fetch = FetchType.LAZY)
+    @JsonSerialize(using = CustomSetUserSerializer.class)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name="bootuser_subscriber",
         joinColumns = {@JoinColumn(name = "user_id")},
         inverseJoinColumns = {@JoinColumn(name = "subscriber_id")} )
-    private Set<User> subscribers;
+    private Set<User> subscribers = new HashSet<>();
 
-    @JsonIgnore
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "bootuser_subscriber",
-            joinColumns = {@JoinColumn(name = "subscriber_id")},
-            inverseJoinColumns = {@JoinColumn(name = "user_id")} )
-    private Set<User> subscriptions;
-
-//    public User(String username, String name, String lastName, String email, String password, String profileImage){
-//        this(null, username, name, lastName, email, password, profileImage,
-//                new Date(), new LinkedHashSet(), new LinkedHashSet<>());
-//    }
+    @JsonSerialize(using = CustomSetUserSerializer.class)
+    @ManyToMany(mappedBy = "subscribers", fetch = FetchType.EAGER)
+    private Set<User> subscriptions = new HashSet<>();
 
     @PrePersist
     void createdAt(){
