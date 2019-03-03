@@ -9,12 +9,18 @@ import com.witchok.bootnet.repositories.UserRepository;
 import com.witchok.bootnet.services.UserService;
 import com.witchok.bootnet.domain.users.User;
 import com.witchok.bootnet.exceptions.UserNotFoundException;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -27,9 +33,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.hamcrest.Matchers.*;
 import static com.witchok.bootnet.UsersCreator.*;
 
-@RunWith(SpringRunner.class)
+@ActiveProfiles("test")
+@RunWith(SpringJUnit4ClassRunner.class)
+//@SpringBootTest
+//@WebMvcTest
+//@AutoConfigureMockMvc
 @WebMvcTest(UserController.class)
 public class UserControllerTest {
+    @Value("${spring.data.rest.base-path}")
+    private String basePath;
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -40,19 +53,7 @@ public class UserControllerTest {
     private UserService userService;
 
     @Test
-    public void shouldCountUsers() throws Exception {
-        long numberOfUsers = 3;
-        when(userRepository.count())
-                .thenReturn(numberOfUsers);
-
-        mockMvc.perform(get("/users/number"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", is( ((Long)numberOfUsers).intValue())));
-    }
-
-    @Test
-    public void shouldReturnUserById() throws Exception{
+    public void shouldReturnUserByIdWithSubscribersAndSubscriptions() throws Exception{
         Set<User> subscribers = getFilledUserSet(2,3);
         Set<User> subscriptions = getFilledUserSet(10,3);
         User user = new User(1,"user1","name1",
@@ -62,15 +63,17 @@ public class UserControllerTest {
         when(userService.findUserById(user.getId()))
                 .thenReturn(user);
 
-        mockMvc.perform(get("/users/profiles/"+user.getId()))
+        mockMvc.perform(get("/users/"+user.getId())
+                .param("wholeData","true"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id",is(1)))
                 .andExpect(jsonPath("$.username",is(user.getUsername())))
                 .andExpect(jsonPath("$.name",is(user.getName())))
                 .andExpect(jsonPath("$.lastName",is(user.getLastName())))
                 .andExpect(jsonPath("$.password").doesNotExist())
                 .andExpect(jsonPath("$.email",is(user.getEmail())))
+                .andExpect(jsonPath("$._links").exists())
+                .andExpect(jsonPath("$.id").doesNotExist())
                 .andExpect(jsonPath("$.subscribers",hasSize(3)))
                 .andExpect(jsonPath("$.subscriptions",hasSize(3)))
                 .andExpect(jsonPath("$.subscribers[*].username",containsInAnyOrder(subscribers
@@ -83,9 +86,34 @@ public class UserControllerTest {
                         .toArray())));
     }
 
+    @Test
+    public void shouldReturnUserByIdWithoutSubscribersAndSubscriptions() throws Exception{
+        Set<User> subscribers = getFilledUserSet(2,3);
+        Set<User> subscriptions = getFilledUserSet(10,3);
+        User user = new User(1,"user1","name1",
+                "lastname1","em@email.com","password",null,
+                new Date(), subscribers, subscriptions);
+
+        when(userService.findUserById(user.getId()))
+                .thenReturn(user);
+
+        mockMvc.perform(get("/users/"+user.getId()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.username",is(user.getUsername())))
+                .andExpect(jsonPath("$.name",is(user.getName())))
+                .andExpect(jsonPath("$.lastName",is(user.getLastName())))
+                .andExpect(jsonPath("$.password").doesNotExist())
+                .andExpect(jsonPath("$.email",is(user.getEmail())))
+                .andExpect(jsonPath("$._links").exists())
+                .andExpect(jsonPath("$.id").doesNotExist())
+                .andExpect(jsonPath("$.subscribers").doesNotExist())
+                .andExpect(jsonPath("$.subscriptions").doesNotExist());
+    }
+
 
     @Test
-    public void shouldReturnNotFoundStatus() throws Exception{
+    public void shouldReturnNotFoundError() throws Exception{
         User user = null;
         int id = 1;
         String excMessage = "user with id '" + id + "' not found";
@@ -93,7 +121,7 @@ public class UserControllerTest {
         when(userService.findUserById(1))
                 .thenThrow(new UserNotFoundException(excMessage));
 
-        mockMvc.perform(get("/users/profiles/"+id))
+        mockMvc.perform(get("/users/"+id))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorMessage", is (excMessage)));
     }
@@ -107,14 +135,14 @@ public class UserControllerTest {
         when(userService.findSubscribersByUserId(3))
                 .thenReturn(subscribers);
 
-        mockMvc.perform(get("/users/profiles/"+userId+"/subscribers"))
+        mockMvc.perform(get("/api/users/"+userId+"/subscribers"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", hasSize(amount)))
-                .andExpect(jsonPath("$[*].id", containsInAnyOrder(subscribers
-                                    .stream()
-                                    .map(item -> item.getId())
-                                    .toArray()))
+                .andExpect(jsonPath("$._embedded.users", hasSize(amount)))
+                .andExpect(jsonPath("$._embedded.users[*].username", containsInAnyOrder(subscribers
+                        .stream()
+                        .map(item -> item.getUsername())
+                        .toArray()))
                 );
     }
 
@@ -125,7 +153,7 @@ public class UserControllerTest {
         when(userService.findSubscribersByUserId(id))
                 .thenThrow(new UserNotFoundException(excMessage));
 
-        mockMvc.perform(get("/users/profiles/"+id+"/subscribers"))
+        mockMvc.perform(get("/users/"+id+"/subscribers"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorMessage",is(excMessage)));
     }
@@ -139,13 +167,13 @@ public class UserControllerTest {
         when(userService.findSubscriptionsByUserId(3))
                 .thenReturn(subscriptions);
 
-        mockMvc.perform(get("/users/profiles/"+userId+"/subscriptions"))
+        mockMvc.perform(get("/api/users/"+userId+"/subscriptions"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", hasSize(amount)))
-                .andExpect(jsonPath("$[*].id", containsInAnyOrder(subscriptions
+                .andExpect(jsonPath("$._embedded.users", hasSize(amount)))
+                .andExpect(jsonPath("$._embedded.users[*].username", containsInAnyOrder(subscriptions
                         .stream()
-                        .map(item -> item.getId())
+                        .map(item -> item.getUsername())
                         .toArray()))
                 );
     }
@@ -157,7 +185,7 @@ public class UserControllerTest {
         when(userService.findSubscriptionsByUserId(id))
                 .thenThrow(new UserNotFoundException(excMessage));
 
-        mockMvc.perform(get("/users/profiles/"+id+"/subscriptions"))
+        mockMvc.perform(get("/users/"+id+"/subscriptions"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorMessage",is(excMessage)));
     }
@@ -170,6 +198,7 @@ public class UserControllerTest {
                 .password("password")
                 .name("name")
                 .lastName("lastname")
+                .profileImage("img/img1")
                 .build();
 
         User savedUser = userRegisterDTO.convertToUser();
@@ -179,17 +208,18 @@ public class UserControllerTest {
         when(userService.registerNewUser(userRegisterDTO.convertToUser()))
                 .thenReturn(savedUser);
 
-        mockMvc.perform(post("/users/profiles")
+        mockMvc.perform(post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(userRegisterDTO))
-            ).andExpect(status().isCreated())
+                .content(asJsonString(userRegisterDTO)))
+            .andExpect(status().isCreated())
             .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.username",is(userRegisterDTO.getUsername())))
             .andExpect(jsonPath("$.email",is(userRegisterDTO.getEmail())))
             .andExpect(jsonPath("$.password").doesNotExist())
             .andExpect(jsonPath("$.name",is(userRegisterDTO.getName())))
-            .andExpect(jsonPath("$.lastName",is(userRegisterDTO.getLastName())))
-            .andExpect(jsonPath("$.id",is(savedUser.getId())));
+            .andExpect(jsonPath("$._links").exists())
+            .andExpect(jsonPath("$.id").doesNotExist())
+            .andExpect(jsonPath("$.lastName",is(userRegisterDTO.getLastName())));
     }
 
     @Test
@@ -205,7 +235,7 @@ public class UserControllerTest {
         when(userService.registerNewUser(userRegisterDTO.convertToUser()))
                 .thenThrow(new UserWithEmailAlreadyExistsException(errorMessage));
 
-        mockMvc.perform(post("/users/profiles")
+        mockMvc.perform(post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(userRegisterDTO)))
                 .andExpect(status().isConflict())
@@ -226,7 +256,7 @@ public class UserControllerTest {
         when(userService.registerNewUser(userRegisterDTO.convertToUser()))
                 .thenThrow(new UserWithUsernameAlreadyExistsException(errorMessage));
 
-        mockMvc.perform(post("/users/profiles")
+        mockMvc.perform(post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(userRegisterDTO)))
                 .andExpect(status().isConflict())

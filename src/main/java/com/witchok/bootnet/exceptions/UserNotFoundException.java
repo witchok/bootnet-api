@@ -1,10 +1,5 @@
 package com.witchok.bootnet.exceptions;
 
-
-import com.witchok.bootnet.domain.users.User;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
 public class UserNotFoundException extends UserProcessingException{
 
 
@@ -12,9 +7,6 @@ public class UserNotFoundException extends UserProcessingException{
         super(msg);
     }
 
-    public UserNotFoundException(String msg, User user){
-        super(msg, user);
-    }
 
     public UserNotFoundException(){
         super();

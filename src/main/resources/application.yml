@@ -1,12 +1,17 @@
 server:
     port: 9999
+#    servlet:
+#      context-path: /api
+spring:
+  data:
+    rest:
+      base-path: /api
 #logging:
 #  level: DEBUG
 ---
 spring:
   profiles:
     active: dev
-  ## Spring DATASOURCE (DataSourceAutoConfiguration & DataSourceProperties)
   datasource:
     url: jdbc:postgresql://localhost:5432/bootnetDB
     username: postgres

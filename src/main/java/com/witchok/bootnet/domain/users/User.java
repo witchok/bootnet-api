@@ -2,14 +2,13 @@ package com.witchok.bootnet.domain.users;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.witchok.bootnet.serialier.CustomSetUserSerializer;
+import com.witchok.bootnet.jsonProcessing.serializers.CustomSetUserSerializer;
 import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Data
@@ -42,14 +41,14 @@ public class User implements Serializable {
     private Date createdAt;
 
     @JsonSerialize(using = CustomSetUserSerializer.class)
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name="bootuser_subscriber",
         joinColumns = {@JoinColumn(name = "user_id")},
         inverseJoinColumns = {@JoinColumn(name = "subscriber_id")} )
     private Set<User> subscribers = new HashSet<>();
 
     @JsonSerialize(using = CustomSetUserSerializer.class)
-    @ManyToMany(mappedBy = "subscribers", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "subscribers", fetch = FetchType.LAZY)
     private Set<User> subscriptions = new HashSet<>();
 
     @PrePersist
