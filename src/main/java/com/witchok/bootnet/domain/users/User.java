@@ -2,7 +2,6 @@ package com.witchok.bootnet.domain.users;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.witchok.bootnet.jsonProcessing.serializers.CustomSetUserSerializer;
 import lombok.*;
 
 import javax.persistence.*;
@@ -18,6 +17,7 @@ import java.util.Set;
 @Builder
 @Entity
 @Table(name = "bootuser")
+@JsonIgnoreProperties(value = {"id","password"}, allowSetters = true)
 public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,7 +31,6 @@ public class User implements Serializable {
 
     private String email;
 
-    @JsonIgnore
     private String password;
 
     @Column(name="profile_img")
@@ -40,14 +39,15 @@ public class User implements Serializable {
     @Column(name="registration_date")
     private Date createdAt;
 
-    @JsonSerialize(using = CustomSetUserSerializer.class)
+//    @JsonSerialize(using = CustomSetUserSerializer.class)
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name="bootuser_subscriber",
         joinColumns = {@JoinColumn(name = "user_id")},
         inverseJoinColumns = {@JoinColumn(name = "subscriber_id")} )
     private Set<User> subscribers = new HashSet<>();
 
-    @JsonSerialize(using = CustomSetUserSerializer.class)
+//    @JsonIgnore
+//    @JsonSerialize(using = CustomSetUserSerializer.class)
     @ManyToMany(mappedBy = "subscribers", fetch = FetchType.LAZY)
     private Set<User> subscriptions = new HashSet<>();
 
