@@ -3,6 +3,7 @@ package com.witchok.bootnet.domain.users;
 import com.fasterxml.jackson.annotation.*;
 import com.witchok.bootnet.domain.comment.Comment;
 import com.witchok.bootnet.domain.post.Post;
+import com.witchok.bootnet.domain.userRole.Role;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 
@@ -15,7 +16,7 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(exclude = {"subscribers","subscriptions"})
+@EqualsAndHashCode(exclude = {"subscribers","subscriptions", "posts", "comments", "roles"})
 @Builder
 
 @Entity
@@ -59,6 +60,12 @@ public class User implements Serializable {
     @OneToMany(mappedBy = "postCreator")
     private Set<Post> posts;
 
+    @JsonIgnore
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_role",
+        joinColumns = {@JoinColumn(name = "user_id")},
+        inverseJoinColumns = {@JoinColumn(name = "role_id")})
+    private Set<Role> roles;
 
     @PrePersist
     void createdAt(){

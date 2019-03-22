@@ -16,6 +16,7 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(exclude = {"comments"})
 @Builder
 
 @JsonIgnoreProperties("id")

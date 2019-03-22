@@ -32,11 +32,11 @@ public class Comment {
     private Date updatedAt;
 
     @ManyToOne
-    @JoinColumn(name = "comment_creator")
+    @JoinColumn(name = "user_commentator")
     private User commentCreator;
 
     @ManyToOne
-    @JoinColumn(name = "post")
+    @JoinColumn(name = "fk_post")
     private Post post;
 
     @PreUpdate
