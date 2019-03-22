@@ -1,8 +1,10 @@
 package com.witchok.bootnet.domain.users;
 
 import com.fasterxml.jackson.annotation.*;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.witchok.bootnet.domain.comment.Comment;
+import com.witchok.bootnet.domain.post.Post;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -15,8 +17,10 @@ import java.util.Set;
 @NoArgsConstructor
 @EqualsAndHashCode(exclude = {"subscribers","subscriptions"})
 @Builder
+
 @Entity
 @Table(name = "bootuser")
+
 @JsonIgnoreProperties(value = {"id","password"}, allowSetters = true)
 public class User implements Serializable {
     @Id
@@ -37,19 +41,24 @@ public class User implements Serializable {
     private String profileImage;
 
     @Column(name="registration_date")
+//    @CreatedDate
     private Date createdAt;
 
-//    @JsonSerialize(using = CustomSetUserSerializer.class)
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name="bootuser_subscriber",
         joinColumns = {@JoinColumn(name = "user_id")},
         inverseJoinColumns = {@JoinColumn(name = "subscriber_id")} )
     private Set<User> subscribers = new HashSet<>();
 
-//    @JsonIgnore
-//    @JsonSerialize(using = CustomSetUserSerializer.class)
     @ManyToMany(mappedBy = "subscribers", fetch = FetchType.LAZY)
     private Set<User> subscriptions = new HashSet<>();
+
+    @OneToMany(mappedBy = "commentCreator")
+    private Set<Comment> comments;
+
+    @OneToMany(mappedBy = "postCreator")
+    private Set<Post> posts;
+
 
     @PrePersist
     void createdAt(){

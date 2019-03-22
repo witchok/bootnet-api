@@ -1,0 +1,47 @@
+[33mcommit 170c2b0a6366f28f18e28f5a68b05769b78ec592[m[33m ([m[1;36mHEAD -> [m[1;32mrest-data-only[m[33m)[m
+Author: Victor Zdota <victorzdota@gmail.com>
+Date:   Tue Mar 5 21:26:41 2019 +0200
+
+    Swapped to rest data features
+
+[33mcommit 937ca704490e06b24644ce71d10655535f5bf9f9[m[33m ([m[1;31morigin/master[m[33m, [m[1;32mmaster[m[33m)[m
+Author: Victor Zdota <victorzdota@gmail.com>
+Date:   Sun Mar 3 16:22:13 2019 +0200
+
+    Spring data rest support added
+
+[33mcommit 8d59638304b84483b20cab5def36e504176696f6[m
+Author: Victor Zdota <victorzdota@gmail.com>
+Date:   Wed Feb 27 19:13:20 2019 +0200
+
+    Fixed subscritpions/subscribers recursion
+
+[33mcommit 428c71ce01ede8d5579da5a38104e5eb13cac399[m
+Author: Victor Zdota <victorzdota@gmail.com>
+Date:   Tue Feb 26 15:34:37 2019 +0200
+
+    User registration added
+
+[33mcommit 43567000f868571f48ab9a986c890a9972f548ce[m
+Author: Victor Zdota <victorzdota@gmail.com>
+Date:   Mon Feb 25 18:00:53 2019 +0200
+
+    Subscriptions search for user added
+
+[33mcommit 8cd1516d7ac3ce4c2ad0c978f7ce422b1d991f7d[m
+Author: Victor Zdota <victorzdota@gmail.com>
+Date:   Sun Feb 24 22:05:34 2019 +0200
+
+    Added subscribers functionallity
+
+[33mcommit 5e1d8a8075b08153dc1da74e8a01a6a56b0dabb2[m
+Author: Victor Zdota <victorzdota@gmail.com>
+Date:   Sat Feb 23 21:11:55 2019 +0200
+
+    Tests for UserController added
+
+[33mcommit d526c568b36658a7488751d3aa27f39ec7e32dbd[m
+Author: Victor Zdota <victorzdota@gmail.com>
+Date:   Thu Feb 21 23:02:35 2019 +0200
+
+    Initial commit

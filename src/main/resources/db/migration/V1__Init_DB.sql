@@ -34,5 +34,5 @@ create table comment(
 	created_date date,
 	updated_date date,
 	user_commentator int references bootUser(id) on delete set null,
-	fk_post int references post(id) on delete cascade
+	post int references post(id) on delete cascade
 );
